@@ -6,6 +6,22 @@ __pycache__/
 # C extensions
 *.so
 
+# MacOS files
+**/.DS_Store
+
+# Latex generated files
+report/**/*.aux
+report/**/*.log
+report/**/*.lot
+report/**/*.log
+report/**/*.toc
+report/**/*.pdf
+report/**/*.lof
+report/**/*.out
+report/**/*.synctex.gz
+#report/.DS_Store
+##report/Figures/.DS_Store#
+
 # Distribution / packaging
 .Python
 build/
