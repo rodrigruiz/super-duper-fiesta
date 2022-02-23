@@ -125,6 +125,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+super-duper-fiesta-env/
 
 # Spyder project settings
 .spyderproject
