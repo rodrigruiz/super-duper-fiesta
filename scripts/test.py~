@@ -1,0 +1,12 @@
+"""
+Usage: extract-dom-rates.py -i INPUT_FILE [-o OUTPUT_FILE -d DETECTOR_FILE]
+Options:
+  -h --help                              Help.
+  -i --input_file INPUT_FILE             Input file.
+  -o --output_file OUTPUT_FILE           Output file.
+  -d --detector_file DETECTOR_FILE       Detector file.
+  -s --chunk_size CHUNK_SIZE             Number of slices dumped to memory at once.  [default: 10000]
+"""
+
+from docopt import docopt
+

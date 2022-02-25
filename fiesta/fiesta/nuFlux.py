@@ -1,3 +1,5 @@
+import numpy as np
+
 def read_flux_file(f):
     """
     Read atmospheric neutrino fluxes from an asscii file.
