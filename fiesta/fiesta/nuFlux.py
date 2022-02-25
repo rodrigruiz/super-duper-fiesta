@@ -55,7 +55,7 @@ def astro_flux(e, phi, gamma, e0, c0):
     """
     return c0 * phi * np.power((e/e0), -gamma)
 
-def atmospheric_flux(e, phi, gamma, e0, c0):
+def atmospheric_flux(e, phi, gamma):
     """
     Returns the atmospheric neutrino flux parametrised according to a simple power law, in units of s^-1*cm^-2*sr^-1.
 
