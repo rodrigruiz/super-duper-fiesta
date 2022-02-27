@@ -1,5 +1,5 @@
 """
-Usage: docopt.py [-o OUTPUT_FILE] -i INPUT_FILE -e MIN_ENERGY -E MAX_ENERGY -f FLAVOR
+Usage: fitAtmFlux.py [-o OUTPUT_FILE] -i INPUT_FILE -e MIN_ENERGY -E MAX_ENERGY -f FLAVOR
 
 Options:
   -h --help                      Help.
