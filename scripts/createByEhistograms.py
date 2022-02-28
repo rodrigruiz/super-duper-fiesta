@@ -1,10 +1,12 @@
 """
-Usage: extractGSeaGenData.py -o OUTPUT_FILE -i INPUT_PATH
+Usage: extractGSeaGenData.py -o OUTPUT_FILE -i INPUT_PATH -f FLAVOR -c CHANNEL
 
 Options:
   -h --help                      Help.
   -o --output_file OUTPUT_FILE   Output file.
-  -i --input_path INPUT_PATH     Input path.
+  -i --input_path INPUT_PATH     Input path.  
+  -f --flavor FLAVOR             Neutrino flavor (nu_e, nu_mu, nu_e_bar, nu_mu_bar). 
+  -c --channel CHANNEL           Interaction channel (cc nc).
 """
 
 from docopt import docopt
@@ -21,13 +23,24 @@ import boost_histogram as bh
 def main():
     arguments = docopt(__doc__)
 
+    flavors =["nu_e", "nu_mu", "nu_e_bar", "nu_mu_bar"]
+    channels=["cc", "nc"]
+    
+    if (arguments['--flavor'] not in flavors):
+        print('ERROR: Flavor argument must be from the list:\n ', flavors)
+        exit(1)
+
+    if (arguments['--channel'] not in channels):
+        print('ERROR: Channel argument must be from the list:\n ', channels)
+        exit(1)
+        
     # define E bins
     logE_min = 2.0
     logE_max = 8.0
     N_e = 100
     step_e = (logE_max - logE_min)/N_e
-    logE_bins = np.arange(logE_min,logE_max+step_e,step_e)
-    E_bins = np.power(10,logE_bins)
+    logE_bins = np.arange(logE_min, logE_max+step_e, step_e)
+    E_bins = np.power(10, logE_bins)
 
     # define By bins
     logBy_min = -3.5
@@ -49,8 +62,30 @@ def main():
         e_vs_by.fill(np.array(h5['e']), np.array(h5['by']))
         h5.close()
 
-    with open(arguments['--output_file'], "wb") as f:
-        pkl.dump(e_vs_by, f)
+    if(Path(arguments['--output_file']).is_file()):
+        print("output file exists. Updating it")
+        with open(arguments["--output_file"], 'rb') as pkl_file:
+            d = pkl.load(pkl_file)
+        pkl_file.close()
+        
+        d[arguments["--flavor"]+"_"+arguments["--channel"]] = e_vs_by
+
+        with open(arguments["--output_file"], 'wb') as outfile:
+            pkl.dump(d, outfile)
+        outfile.close()
+        
+    else:
+        print("output file does not exist. Creating it")
+        d={}
+        for f in flavors:
+            for c in channels:
+                d[f+"_"+c]=None
+        
+        d[arguments["--flavor"]+"_"+arguments["--channel"]] = e_vs_by
+        
+        with open(arguments["--output_file"], 'wb') as outfile:
+            pkl.dump(d, outfile)
+        outfile.close()
     
 if __name__== '__main__':
     main()
