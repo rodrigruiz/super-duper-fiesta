@@ -72,3 +72,12 @@ def integrate_x_range(h,a,b):
         for i, (c,w) in enumerate(zip(h['density'][i:j],h['volumes'][i:j])):
             integral = integral+c*w
     return integral
+
+def plot_2d_hist(h):    
+    w,x,y = h.to_numpy()
+    fig, ax = plt.subplots()
+    mesh = ax.pcolormesh(x, y, w.T,norm=matplotlib.colors.LogNorm())
+    ax.set_xlabel(h.axes[0].metadata)
+    ax.set_ylabel(h.axes[1].metadata)
+    fig.colorbar(mesh)
+    return fig,ax
