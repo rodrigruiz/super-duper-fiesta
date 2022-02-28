@@ -15,7 +15,7 @@ def get_by_range(e, emin, emax):
     ymax is the inelasticity corresponding to e and emax
 
     '''
-    E_nu = x
+    E_nu = e
     E_cascade = np.array([emin,emax])
     E_nu_prime = E_nu - E_cascade
     y = (E_nu - E_nu_prime)/E_nu
@@ -40,3 +40,14 @@ def extract_data(f):
     d['loge']  = np.log10(d['e'])
     d['logby'] = np.log10(d['by'])
     return d
+
+def p_100TeV(x, phi, gamma):
+    """
+    Returns the probability as a function of the primary neutrino energy, that a cascade between 90 and 110TeV will be produced. This is parametrised according to a simple power law.
+    
+    Keyword arguments:
+    e -- energy
+    phi -- normalisation
+    gamma -- index
+    """
+    return phi * np.power((x), -gamma) 

@@ -1,5 +1,7 @@
 import numpy as np
 import boost_histogram as bh
+import matplotlib
+import matplotlib.pyplot as plt
 
 def find_nearest_index(array, value):
     """
