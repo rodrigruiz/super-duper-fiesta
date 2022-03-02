@@ -161,10 +161,45 @@ def main():
     for ax in [axs2[0]]:
         ax.set(ylabel=r'F$_{\nu}$/($GeV ^{-1} \cdot cm ^{-2}\cdot s ^{-1}\cdot sr ^{-1}$)')
 
+    fig3, axs3 = plt.subplots()
+     
+    # astro
+    axs3.plot(np.power(10,logE), nf.astro_flux(np.power(10,logE), phi, gamma, e0, c0)/6, color='royalblue', label=r'astro $\nu _{i}$', linewidth=2)
+
+    # atm nu_e data
+    axs3.plot(flux["E"][:800],
+              nf.atmospheric_flux(flux["E"][:800], p["nu_e"]["phi"], p["nu_e"]["gamma"]),
+              color='darkorange', linestyle='-', alpha=1, label=r'$\nu_{e}$')
+    
+    # atm nu_mu data
+    axs3.plot(flux["E"][:800],
+              nf.atmospheric_flux(flux["E"][:800], p["nu_mu"]["phi"], p["nu_mu"]["gamma"]),
+              color='limegreen', linestyle='-', alpha=1, label=r'$\nu_{\mu}$')
+
+    # atm nu_e_bar data
+    axs3.plot(flux["E"][:800],
+              nf.atmospheric_flux(flux["E"][:800], p["nu_e_bar"]["phi"], p["nu_e_bar"]["gamma"]),
+              color='red', linestyle='-', alpha=1, label=r'$\bar{\nu}_{e}$')
+    
+    # atm nu_mu_bar data
+    axs3.plot(flux["E"][:800],
+              nf.atmospheric_flux(flux["E"][:800], p["nu_mu_bar"]["phi"], p["nu_mu_bar"]["gamma"]),
+              color='olivedrab', linestyle='-', alpha=1, label=r'$\bar{\nu}_{\mu}$')
+    
+    axs3.set_xlim(5e4,5e5)
+    axs3.set_ylim(1e-21,1e-17)
+    axs3.set_yscale('log')
+    axs3.set_xscale('log')
+    axs3.set(ylabel=r'F$_{\nu}$/($GeV ^{-1} \cdot cm ^{-2}\cdot s ^{-1}\cdot sr ^{-1}$)',xlabel=r'E$_{\nu}/GeV$')
+    axs3.grid(which='major', linestyle='-')
+    axs3.grid(which='minor', linestyle='--')
+    axs3.legend()
+    
     fig1.savefig('nu_flux_1.png', dpi=fig1.dpi)
     fig2.savefig('nu_flux_2.png', dpi=fig2.dpi)
+    fig3.savefig('nu_flux_3.png', dpi=fig2.dpi)
     
-    # plt.show()
+    plt.show()
         
 if __name__== '__main__':
     main()

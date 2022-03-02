@@ -1,10 +1,11 @@
 """
-Usage: fitByvsEnergy.py [-o OUTPUT_FILE] -i INPUT_FILE -f FLAVOR -c CHANNEL -e E_MIN -E E_MAX
+Usage: fitByvsEnergy.py [-o OUTPUT_FILE] -i INPUT_FILE -p PAR_FILE -f FLAVOR -c CHANNEL -e E_MIN -E E_MAX
 
 Options:
   -h --help                      Help.
   -o --output_file OUTPUT_FILE   Output file.
   -i --input_file INPUT_FILE     Input file.  
+  -p --parameter_file PAR_FILE   Parameter file.  
   -f --flavor FLAVOR             Neutrino flavor (nu_e, nu_mu, nu_e_bar, nu_mu_bar). 
   -c --channel CHANNEL           Interaction channel (cc nc).
   -e --emin E_MIN                Minimum cascade energy.  
@@ -39,8 +40,8 @@ def main():
         exit(1)
 
     if (arguments['--output_file']==None):
-        arguments['--output_file']="by_vs_E.json"
-    
+        arguments['--output_file']=arguments["--flavor"]+"_"+arguments["--channel"]+"_by_vs_E_fit.png"
+
 
     pickle_file=open(arguments["--input_file"], 'rb')
     histograms=pkl.load(pickle_file)
@@ -53,44 +54,27 @@ def main():
     idx=tls.find_nearest_index(energies, 1e5)
     for i, e in enumerate(energies[idx:-2]):
         pdf=tls.get_x_pdf(h,i+idx)
-        y1,y2 = nb.get_by_range(e, 9e4, 1.1e5)
+        y1,y2 = nb.get_by_range(e, float(arguments['--emin']), float(arguments['--emax']))
         p = tls.integrate_x_range(pdf,y1,y2)
         en.append(e)
         pr.append(p)
 
-    a,b = curve_fit(nb.p_100TeV, en[2:], pr[2:], maxfev=2000)
-
-    if(Path(arguments['--output_file']).is_file()):
-        print("output file exists. Updating it")
-        with open(arguments["--output_file"], 'r') as json_file:
-            d = json.load(json_file)
-        json_file.close()
+    with open(arguments["--parameter_file"], 'r') as json_file:
+        p = json.load(json_file)
+    json_file.close()
         
-        d[arguments["--flavor"]+"_"+arguments["--channel"]] = {'phi': a[0], 'gamma': a[1]}
+    phi=p[arguments["--flavor"]+"_"+arguments["--channel"]]['phi']
+    gamma=p[arguments["--flavor"]+"_"+arguments["--channel"]]['gamma']
+    
+    plt.plot(en[2:], nb.p_100TeV(en[2:], phi, gamma), label='Fit')
+    plt.plot(en[2:],pr[2:], label="data")
+    plt.yscale("log")
+    plt.xscale("log")
+    plt.xlabel("Neutrino energy(GeV)")
+    plt.ylabel("P(90TeV-110TeV)")
+    plt.legend()
 
-        with open(arguments["--output_file"], 'w') as outfile:
-            json.dump(d, outfile)
-        outfile.close()
-    else:
-        print("output file does not exist. Creating it")
-        d={}
-        for f in flavors:
-            for c in channels:
-                d[f+"_"+c]=None
-        
-        d[arguments["--flavor"]+"_"+arguments["--channel"]] = {'phi': a[0], 'gamma': a[1]}
-        
-        with open(arguments["--output_file"], 'w') as outfile:
-            json.dump(d, outfile)
-        outfile.close()
-
-    # plt.plot(en[2:], nb.p_100TeV(en[2:], a[0], a[1]), label='Fit')
-    # plt.plot(en[2:],pr[2:], label="data")
-    # plt.yscale("log")
-    # plt.xscale("log")
-    # plt.xlabel("Neutrino energy(GeV)")
-    # plt.ylabel("P(90TeV-110TeV)")
-    # plt.legend()
+    plt.savefig(arguments['--output_file'])
     # plt.show()
     
 if __name__== '__main__':
