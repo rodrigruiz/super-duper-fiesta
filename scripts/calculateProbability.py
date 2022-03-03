@@ -1,5 +1,5 @@
 """
-Usage: calculateProbability.py [-A ATM_DATA -X XS_DATA -P PROB_DATA] -a ATM_PARAM -x XS_PARAM -p PROB_PARAM
+Usage: calculateProbability.py [-A ATM_DATA -X XS_DATA -P PROB_DATA] -a ATM_PARAM -x XS_PARAM -p PROB_PARAM -o OUT_FILE
 
 Options:
   -h --help                            Help.
@@ -9,6 +9,7 @@ Options:
   -A --atm_flux_data ATM_DATA   JSON file with the atmospheric flux parameterisation.
   -X --xs_data XS_DATA    JSON file with the cross section parameterisation.  
   -P --prob_data PROB_DATA  JSON file with the parameterisation of the probability to get a 100TeV shower.
+  -o --output_file OUT_FILE JSON file with the results.
 """
 
 from docopt import docopt
@@ -162,7 +163,15 @@ def main():
     p=(A_SG[0]+B_SG[0])/(A_SG[0]+B_SG[0]+A_BG[0]+B_BG[0])
     print(p)
 
+    results={}
+    results['I1 signal']=A_SG
+    results['I2 signal']=B_SG
+    results['I1 background']=A_BG
+    results['I2 background']=B_BG
+    results['probability']=p
 
+    
+    
     # control plots
 
     emin = 9e4
@@ -192,7 +201,7 @@ def main():
     a1.set_yscale("log")
     a1.set_xscale("log")
     a1.set_title("integrand equation 2")
-
+    a1.grid()
     f2,a2=plt.subplots()
 
     if (arguments['--atm_flux_data']!=None):
@@ -214,7 +223,7 @@ def main():
     a2.set_yscale("log")
     a2.set_xscale("log")
     a2.set_title("electron neutrino fluxes")
-
+    a2.grid()
     emin = 9e4
     emax = 1e12
     
@@ -248,7 +257,7 @@ def main():
     a3.set_yscale("log")
     a3.set_xscale("log")
     a3.set_title("integrand equation 1")
-    
+    a3.grid()
     plt.show()
     
 if __name__== '__main__':
