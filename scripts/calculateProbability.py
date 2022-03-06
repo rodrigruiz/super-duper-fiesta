@@ -170,8 +170,10 @@ def main():
     results['I2 background']=B_BG
     results['probability']=p
 
-    
-    
+    with open(arguments['--output_file'], "w") as outfile:
+        json.dump(results, outfile)
+    outfile.close()
+
     # control plots
 
     emin = 9e4
@@ -233,16 +235,16 @@ def main():
 
     
     f3,a3=plt.subplots()
-    
+
     a3.plot(en,integrand_a_bg(en,xs_cc['a1'],
                               xs_cc['b1'],
                               xs_cc['a2'],
                               xs_cc['b2'],
                               p_100['phi'],
                               p_100['gamma'],
-                              atm_nu_e['phi'],
-                              atm_nu_e['gamma']), color='darkorange', label=(r"$\phi _{atm}(\nu _{\mu})\cdot \sigma _{NC}\cdot p(90-110TeV)$"))
-    
+                              atm_nu_mu['phi'],
+                              atm_nu_mu['gamma']), color='darkorange', label=(r"$\phi _{atm}(\nu _{\mu})\cdot \sigma _{NC}\cdot p(90-110TeV)$"))
+
     a3.plot(en,integrand_a_s(en,xs_cc['a1'],
                              xs_cc['b1'],
                              xs_cc['a2'],
@@ -253,6 +255,7 @@ def main():
                              astro_flx['gamma'],
                              astro_flx['e0'],
                              astro_flx['c0']), color='royalblue', label=(r"$\phi _{astro}(\nu _{\mu})\cdot \sigma _{NC}\cdot p(90-110TeV)$"))
+
     a3.legend()
     a3.set_yscale("log")
     a3.set_xscale("log")
