@@ -6,6 +6,10 @@ class table:
     channels =["cc", "nc"]
 
     def __init__(self):
+        d={}
+        d["xs"]=self.xs
+        d["flux"]=self.flux
+        d['p_cascade']=self.prob
 
     def flux(self):
         flux={}
@@ -23,7 +27,7 @@ class table:
 
         atm={}
         for p in particles:
-            for f in flavors:
+            for f in self.flavors:
                 m={'emin': None, 'emax': None}
                 d={'phi': None, 'gamma': None}
                 atm[p+'_'+f]={'metadata': m, 'data': d}
@@ -35,14 +39,23 @@ class table:
         xs={}
         xm={'units': None}
         xs['metadata']=xm
-        for p in particles:
-            for c in channels:
+        for p in self.particles:
+            for c in self.channels:
                 m={'emin': None, 'emax': None}
                 d={'a1': None, 'a2': None, 'b1': None, 'b2': None}
                 xs[p+'_'+c]={'metadata': m, 'data': d}
         return xs
 
     def prob(self):
+        prob={}
+        for p in self.particles:
+            for f in self.flavors:
+                for c in self.channels:
+                    m={'emin': None, 'emax': None}
+                    d={'phi': None, 'gamma': None}
+                    prob[p+'_'+f+'_'+c]={'metadata': m, 'data': d}
+        return prob
+
     def write(self, filename):
     def set_atm_flux(self):
     def get_atm_flux(self):
