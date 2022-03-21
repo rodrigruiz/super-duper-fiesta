@@ -1,22 +1,35 @@
 """
-Usage: calculateProbability.py [-A ATM_DATA -X XS_DATA -P PROB_DATA] -a ATM_PARAM -x XS_PARAM -p PROB_PARAM -o OUT_FILE
+Usage: calculateProbability.py [-A ATM_DATA -X XS_DATA -P PROB_DATA] -o OUT_FILE -t JSON_TABLE
 
 Options:
   -h --help                            Help.
-  -a --atm_flux_parameters ATM_PARAM   JSON file with the atmospheric flux parameterisation.
-  -x --xs_parameters XS_PARAM    JSON file with the cross section parameterisation.  
-  -p --prob_param PROB_PARAM  JSON file with the parameterisation of the probability to get a 100TeV shower.
   -A --atm_flux_data ATM_DATA   JSON file with the atmospheric flux parameterisation.
   -X --xs_data XS_DATA    JSON file with the cross section parameterisation.  
   -P --prob_data PROB_DATA  JSON file with the parameterisation of the probability to get a 100TeV shower.
   -o --output_file OUT_FILE JSON file with the results.
+  -t --json_table JSON_TABLE     JSON formatted table with all the analysis parameters.
 """
+# """
+# Usage: calculateProbability.py [-A ATM_DATA -X XS_DATA -P PROB_DATA] -a ATM_PARAM -x XS_PARAM -p PROB_PARAM -o OUT_FILE -t JSON_TABLE
+
+# Options:
+#   -h --help                            Help.
+#   -a --atm_flux_parameters ATM_PARAM   JSON file with the atmospheric flux parameterisation.
+#   -x --xs_parameters XS_PARAM    JSON file with the cross section parameterisation.  
+#   -p --prob_param PROB_PARAM  JSON file with the parameterisation of the probability to get a 100TeV shower.
+#   -A --atm_flux_data ATM_DATA   JSON file with the atmospheric flux parameterisation.
+#   -X --xs_data XS_DATA    JSON file with the cross section parameterisation.  
+#   -P --prob_data PROB_DATA  JSON file with the parameterisation of the probability to get a 100TeV shower.
+#   -o --output_file OUT_FILE JSON file with the results.
+#   -t --json_table JSON_TABLE     JSON formatted table with all the analysis parameters.
+# """
 
 from docopt import docopt
 from fiesta import nuBy as nb
 from fiesta import nuFlux as nf
 from fiesta import nuXs as nx
 from fiesta import tools as tls
+from fiesta import table as tbl
 import numpy as np
 import json
 from scipy.integrate import quad
@@ -94,22 +107,30 @@ def integrand_b_s(e, x1, x2, x3, x4, f1, f2, f3, f4):
 def main():
     arguments = docopt(__doc__)
 
-    with open(arguments["--xs_parameters"], 'r') as xs_par_file:
-        xs_parameters = json.load(xs_par_file)
-    xs_par_file.close()
+    # with open(arguments["--xs_parameters"], 'r') as xs_par_file:
+    #     xs_parameters = json.load(xs_par_file)
+    # xs_par_file.close()
 
-    with open(arguments["--atm_flux_parameters"], 'r') as atm_par_file:
-        atm_parameters = json.load(atm_par_file)
-    atm_par_file.close()
+    # with open(arguments["--atm_flux_parameters"], 'r') as atm_par_file:
+    #     atm_parameters = json.load(atm_par_file)
+    # atm_par_file.close()
 
-    with open(arguments["--prob_param"], 'r') as prob_par_file:
-        prob_parameters = json.load(prob_par_file)
-    prob_par_file.close()
+    # with open(arguments["--prob_param"], 'r') as prob_par_file:
+    #     prob_parameters = json.load(prob_par_file)
+    # prob_par_file.close()
 
+    t = tbl.table.from_json(arguments["--json_table"])
+
+    d = t.get_table()
+
+    
     astro_flx={'phi': 1.66, 'gamma': 2.53, 'e0': 100e3, 'c0': 3e-18}
-    xs_nc=xs_parameters['nc_nu']
-    p_100=prob_parameters['nu_mu_nc']
-    atm_nu_mu=atm_parameters['nu_mu']
+    # xs_nc=xs_parameters['nc_nu']
+    # p_100=prob_parameters['nu_mu_nc']
+    # atm_nu_mu=atm_parameters['nu_mu']
+    xs_nc=d['xs']['nu_nc']['data']
+    p_100=d['p_cascade']['nu_mu_nc']['data']
+    atm_nu_mu=d['flux']['atm']['nu_mu']['data']
 
     A_BG=quad(integrand_a_bg, 9e4, np.inf, args=(xs_nc['a1'],
                                                  xs_nc['b1'],
@@ -131,8 +152,11 @@ def main():
                                                 astro_flx['e0'],
                                                 astro_flx['c0']))
 
-    xs_cc=xs_parameters['cc_nu']
-    atm_nu_e=atm_parameters['nu_e']
+    # xs_cc=xs_parameters['cc_nu']
+    # atm_nu_e=atm_parameters['nu_e']
+
+    xs_cc=d['xs']['nu_cc']['data']
+    atm_nu_e=d['flux']['atm']['nu_e']['data']
 
     B_BG=quad(integrand_b_bg, 9e4, 1.1e5, args=(xs_cc['a1'],
                                                 xs_cc['b1'],

@@ -1,5 +1,5 @@
 """
-Usage: fitByvsEnergy.py [-o OUTPUT_FILE] -i INPUT_FILE -f FLAVOR -c CHANNEL -e E_MIN -E E_MAX
+Usage: fitByvsEnergy.py [-o OUTPUT_FILE] -i INPUT_FILE -f FLAVOR -c CHANNEL -e E_MIN -E E_MAX -t JSON_TABLE
 
 Options:
   -h --help                      Help.
@@ -8,11 +8,13 @@ Options:
   -f --flavor FLAVOR             Neutrino flavor (nu_e, nu_mu, nu_e_bar, nu_mu_bar). 
   -c --channel CHANNEL           Interaction channel (cc nc).
   -e --emin E_MIN                Minimum cascade energy.  
-  -E --emax E_MAX                Maximum cascade energy.  
+  -E --emax E_MAX                Maximum cascade energy.
+  -t --json_table JSON_TABLE     JSON formatted table with all the analysis parameters.  
 """
 
 from docopt import docopt
 from fiesta import tools as tls
+from fiesta import table as tbl
 from os.path import exists
 import glob, os
 import pickle as pkl
@@ -27,7 +29,7 @@ import json
 def main():
     arguments = docopt(__doc__)
 
-    flavors =["nu_e", "nu_mu", "nu_e_bar", "nu_mu_bar"]
+    flavors =["nu_e", "nu_mu", "anu_e", "anu_mu"]
     channels=["cc", "nc"]
     
     if (arguments['--flavor'] not in flavors):
@@ -53,36 +55,44 @@ def main():
     idx=tls.find_nearest_index(energies, 1e5)
     for i, e in enumerate(energies[idx:-2]):
         pdf=tls.get_x_pdf(h,i+idx)
-        y1,y2 = nb.get_by_range(e, 9e4, 1.1e5)
+        # y1,y2 = nb.get_by_range(e, 9e4, 1.1e5)
+        y1,y2 = nb.get_by_range(e, float(arguments['--emin']), float(arguments['--emax']))
         p = tls.integrate_x_range(pdf,y1,y2)
         en.append(e)
         pr.append(p)
 
     a,b = curve_fit(nb.p_100TeV, en[2:], pr[2:], maxfev=2000)
 
-    if(Path(arguments['--output_file']).is_file()):
-        print("output file exists. Updating it")
-        with open(arguments["--output_file"], 'r') as json_file:
-            d = json.load(json_file)
-        json_file.close()
-        
-        d[arguments["--flavor"]+"_"+arguments["--channel"]] = {'phi': a[0], 'gamma': a[1]}
+    t = tbl.table.from_json(arguments["--json_table"])
+    
+    t.set_proba(arguments['--flavor']+'_'+arguments['--channel'], arguments['--emin'], arguments['--emax'], a[0], a[1])
 
-        with open(arguments["--output_file"], 'w') as outfile:
-            json.dump(d, outfile)
-        outfile.close()
-    else:
-        print("output file does not exist. Creating it")
-        d={}
-        for f in flavors:
-            for c in channels:
-                d[f+"_"+c]=None
+    t.write(arguments["--json_table"])
+
+    
+    # if(Path(arguments['--output_file']).is_file()):
+    #     print("output file exists. Updating it")
+    #     with open(arguments["--output_file"], 'r') as json_file:
+    #         d = json.load(json_file)
+    #     json_file.close()
         
-        d[arguments["--flavor"]+"_"+arguments["--channel"]] = {'phi': a[0], 'gamma': a[1]}
+    #     d[arguments["--flavor"]+"_"+arguments["--channel"]] = {'phi': a[0], 'gamma': a[1]}
+
+    #     with open(arguments["--output_file"], 'w') as outfile:
+    #         json.dump(d, outfile)
+    #     outfile.close()
+    # else:
+    #     print("output file does not exist. Creating it")
+    #     d={}
+    #     for f in flavors:
+    #         for c in channels:
+    #             d[f+"_"+c]=None
         
-        with open(arguments["--output_file"], 'w') as outfile:
-            json.dump(d, outfile)
-        outfile.close()
+    #     d[arguments["--flavor"]+"_"+arguments["--channel"]] = {'phi': a[0], 'gamma': a[1]}
+        
+    #     with open(arguments["--output_file"], 'w') as outfile:
+    #         json.dump(d, outfile)
+    #     outfile.close()
 
     # plt.plot(en[2:], nb.p_100TeV(en[2:], a[0], a[1]), label='Fit')
     # plt.plot(en[2:],pr[2:], label="data")

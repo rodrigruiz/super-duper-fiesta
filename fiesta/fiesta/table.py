@@ -77,7 +77,7 @@ class table:
         xs['metadata']=xm
         for p in self.particles:
             for c in self.channels:
-                m={'emin': None, 'emax': None}
+                m={'logemin': None, 'logemax': None}
                 d={'a1': None, 'a2': None, 'b1': None, 'b2': None}
                 xs[p+'_'+c]={'metadata': m, 'data': d}
         return xs
@@ -99,15 +99,32 @@ class table:
 
     def set_atm_flux(self, neutrino, emin, emax, phi, gamma):
         if (neutrino in [str(i)+'_'+str(j) for i in self.particles for j in self.flavors]):
-            self.d['flux']['atm'][neutrino]['metadata']['emin']=emin
-            self.d['flux']['atm'][neutrino]['metadata']['emax']=emax
-            self.d['flux']['atm'][neutrino]['data']['phi']=phi
-            self.d['flux']['atm'][neutrino]['data']['gamma']=gamma
+            self.d['flux']['atm'][neutrino]['metadata']['emin'] = emin
+            self.d['flux']['atm'][neutrino]['metadata']['emax'] = emax
+            self.d['flux']['atm'][neutrino]['data']['phi'] = phi
+            self.d['flux']['atm'][neutrino]['data']['gamma'] = gamma
         else:
             print('WARNING: unknown flavor. Table is not updated')
         
     # def get_atm_flux(self):
-    # def set_xs(self):
+    def set_xs(self, channel, logemin, logemax, a1, b1, a2, b2):
+        if (channel in [str(i)+'_'+str(j) for i in self.particles for j in self.channels]):
+            self.d['xs'][channel]['metadata']['logemin'] = logemin 
+            self.d['xs'][channel]['metadata']['logemax'] = logemax
+            self.d['xs'][channel]['data']['a1'] = a1
+            self.d['xs'][channel]['data']['b1'] = b1
+            self.d['xs'][channel]['data']['a2'] = a2
+            self.d['xs'][channel]['data']['b2'] = b2
+        else:
+            print('WARNING: unknown channel. Table is not updated')
+    
     # def get_xs(self):
-    # def set_proba(self):
+    def set_proba(self, channel, emin, emax, phi, gamma):
+        if (channel in [str(i)+'_'+str(j)+'_'+str(k) for i in self.particles for j in self.flavors for k in self.channels]):
+            self.d['p_cascade'][channel]['metadata']['emin'] = emin 
+            self.d['p_cascade'][channel]['metadata']['emax'] = emax
+            self.d['p_cascade'][channel]['data']['phi'] = phi
+            self.d['p_cascade'][channel]['data']['gamma'] = gamma
+        else:
+            print('WARNING: unknown channel. Table is not updated')
     # def get_proba(self):
