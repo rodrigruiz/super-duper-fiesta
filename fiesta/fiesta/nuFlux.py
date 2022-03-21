@@ -19,8 +19,8 @@ def read_flux_file(f):
     d["E"]=np.power(10, np.array(log_e)) GeV
     d["nu_e"]=np.array(nue)
     d["nu_mu"]=np.array(numu)
-    d["nu_e_bar"]=np.array(nuebar)
-    d["nu_mu_bar"]=np.array(numubar)
+    d["anu_e"]=np.array(nuebar)
+    d["anu_mu"]=np.array(numubar)
     """
     d={}
     units_factor = 1.e-4/(4*np.pi) #from m^-2 to cm^-2, and from full solid angle to sr^-1
@@ -38,8 +38,8 @@ def read_flux_file(f):
     d["E"]=np.power(10, np.array(log_e))
     d["nu_e"]=np.array(nue)
     d["nu_mu"]=np.array(numu)
-    d["nu_e_bar"]=np.array(nuebar)
-    d["nu_mu_bar"]=np.array(numubar)
+    d["anu_e"]=np.array(nuebar)
+    d["anu_mu"]=np.array(numubar)
     File.close()
     return d
 

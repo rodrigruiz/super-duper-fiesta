@@ -17,28 +17,28 @@ def read_xs_file(f):
     Returns a dictionary with the following keys (cross sections are given in cm^-2):
     d["log_E"]=np.array(log_e) log10(GeV)
     d["E"]=np.power(10, np.array(log_e)) GeV
-    d["cc_nu"]=np.array(nue)
-    d["nc_nu"]=np.array(numu)
-    d["cc_nu_bar"]=np.array(nuebar)
-    d["nc_nu_bar"]=np.array(numubar)
+    d["nu_cc"]=np.array(nue)
+    d["nu_nc"]=np.array(numu)
+    d["anu_cc"]=np.array(nuebar)
+    d["anu_nc"]=np.array(numubar)
     """
     d={}
-    log_e, cc_nu, nc_nu, cc_nu_bar, nc_nu_bar = ([] for i in range(5))
+    log_e, nu_cc, nu_nc, anu_cc, anu_nc = ([] for i in range(5))
     File = open(f,"r")
     lines = File.readlines()
     for line in lines:
         columns = line.split(' ')
         log_e.append(float(columns[0]))
-        cc_nu.append(float(columns[1]))
-        nc_nu.append(float(columns[2]))
-        cc_nu_bar.append(float(columns[3]))
-        nc_nu_bar.append(float(columns[4]))
+        nu_cc.append(float(columns[1]))
+        nu_nc.append(float(columns[2]))
+        anu_cc.append(float(columns[3]))
+        anu_nc.append(float(columns[4]))
     d["log_E"]=np.array(log_e)
     d["E"]=np.power(10, np.array(log_e))
-    d["cc_nu"]=np.array(cc_nu)
-    d["nc_nu"]=np.array(nc_nu)
-    d["cc_nu_bar"]=np.array(cc_nu_bar)
-    d["nc_nu_bar"]=np.array(nc_nu_bar)
+    d["nu_cc"]=np.array(nu_cc)
+    d["nu_nc"]=np.array(nu_nc)
+    d["anu_cc"]=np.array(anu_cc)
+    d["anu_nc"]=np.array(anu_nc)
     File.close()
     return d
 
