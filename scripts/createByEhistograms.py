@@ -5,7 +5,7 @@ Options:
   -h --help                      Help.
   -o --output_file OUTPUT_FILE   Output file.
   -i --input_path INPUT_PATH     Input path.  
-  -f --flavor FLAVOR             Neutrino flavor (nu_e, nu_mu, nu_e_bar, nu_mu_bar). 
+  -f --flavor FLAVOR             Neutrino flavor (nu_e, nu_mu, anu_e, anu_mu). 
   -c --channel CHANNEL           Interaction channel (cc nc).
 """
 
@@ -23,7 +23,7 @@ import boost_histogram as bh
 def main():
     arguments = docopt(__doc__)
 
-    flavors =["nu_e", "nu_mu", "nu_e_bar", "nu_mu_bar"]
+    flavors =["nu_e", "nu_mu", "anu_e", "anu_mu"]
     channels=["cc", "nc"]
     
     if (arguments['--flavor'] not in flavors):
